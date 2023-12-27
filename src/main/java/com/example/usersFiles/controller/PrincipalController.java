@@ -6,12 +6,15 @@ import com.example.usersFiles.models.RoleEntity;
 import com.example.usersFiles.models.UserEntity;
 import com.example.usersFiles.repositories.UserRespository;
 import jakarta.validation.Valid;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-//import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,7 @@ public class PrincipalController {
     }
 
 
+    // Crear un usuario
     @PostMapping("/createUser")
     public ResponseEntity<?> createUser(@Valid @RequestBody CreateUserDTO createUserDTO) {
 
@@ -53,9 +57,29 @@ public class PrincipalController {
         return ResponseEntity.ok(userEntity);
     }
 
+    // Eliminar el usuario por medio del Id
     @DeleteMapping("/deleteUser")
     public String deleteUser(@RequestParam String id) {
         userRespository.deleteById(Long.parseLong(id));
         return "Se ha borrado el usuario con id".concat(id);
+    }
+
+    // Ver todos los ususarios
+    @GetMapping("/allUsers")
+    public ResponseEntity<Iterable<UserEntity>> getAllUsers() {
+        Iterable<UserEntity> userEntity = userRespository.findAll();
+        return new ResponseEntity<>(userEntity, HttpStatus.OK);
+    }
+
+    // Ver los usuarios por medio del Id
+    @GetMapping("/{id}")
+    public ResponseEntity<UserEntity> getUsersById(@PathVariable Long id) {
+        Optional<UserEntity> user = userRespository.findById(id);
+
+        if(user.isPresent()) {
+            return ResponseEntity.ok(user.get());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
