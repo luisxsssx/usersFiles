@@ -5,15 +5,13 @@ import com.example.usersFiles.models.ERole;
 import com.example.usersFiles.models.RoleEntity;
 import com.example.usersFiles.models.UserEntity;
 import com.example.usersFiles.repositories.UserRespository;
+import com.example.usersFiles.service.UserService;
 import jakarta.validation.Valid;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +25,9 @@ public class PrincipalController {
 
     @Autowired
     private UserRespository userRespository;
+
+    @Autowired
+    private UserService userService;
 
     @GetMapping("/hi")
     public String hello() {
@@ -81,5 +82,12 @@ public class PrincipalController {
         } else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // Update User
+    @PostMapping("/update/{id}")
+    public String updateUser(@PathVariable Long id, @RequestBody UserEntity userEntity) {
+        userService.updateUser(id, userEntity);
+        return "User update succesfully";
     }
 }
